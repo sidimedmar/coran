@@ -579,7 +579,7 @@ const ToolsView = ({ language }: { language: Language }) => {
   const [currentPrayer, setCurrentPrayer] = useState<string | null>(null);
 
   useEffect(() => {
-    QuranService.getPrayerTimes('Paris', 'France').then(setPrayerTimes);
+    QuranService.getPrayerTimes('Nouakchott', 'Mauritania').then(setPrayerTimes);
   }, []);
 
   useEffect(() => {
