@@ -1,0 +1,8 @@
+{
+  "name": "Mon Coran Ramadan",
+  "description": "Application d'apprentissage et de suivi de la lecture du Coran pour le Ramadan, avec lecteur audio, plans de lecture, quiz et horaires de prière.",
+  "requestFramePermissions": [
+    "geolocation",
+    "notifications"
+  ]
+}
