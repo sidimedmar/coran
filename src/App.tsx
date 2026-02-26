@@ -25,7 +25,18 @@ import {
   Languages,
   Volume2,
   RotateCcw,
-  RotateCw
+  RotateCw,
+  Repeat,
+  Repeat1,
+  MessageSquare,
+  StickyNote,
+  Trash2,
+  Save,
+  X,
+  CheckCircle2,
+  Circle,
+  Compass,
+  ArrowUp
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { QuranService } from './services/quranService';
@@ -80,7 +91,29 @@ const translations = {
     morning: 'Matin',
     sleep: 'Sommeil',
     travel: 'Voyage',
-    results: 'Résultats'
+    results: 'Résultats',
+    repeatVerse: 'Répéter le verset',
+    repeatSurah: 'Répéter la sourate',
+    noRepeat: 'Pas de répétition',
+    speed: 'Vitesse',
+    notes: 'Notes',
+    addNote: 'Ajouter une note',
+    saveNote: 'Enregistrer',
+    deleteNote: 'Supprimer',
+    reminderType: 'Type de rappel',
+    readingReminder: 'Lecture du Coran',
+    prayerReminder: 'Prières',
+    duaReminder: 'Douas',
+    markUnread: 'Marquer comme non lu',
+    markJuzRead: 'Marquer le Juz comme lu',
+    markJuzUnread: 'Marquer le Juz comme non lu',
+    qibla: 'Direction de la Qibla',
+    qiblaDesc: 'Direction vers la Kaaba à La Mecque.',
+    frequency: 'Fréquence',
+    time: 'Heure',
+    daily: 'Quotidien',
+    weekly: 'Hebdomadaire',
+    reminders: 'Rappels'
   },
   ar: {
     reader: 'القراءة',
@@ -127,14 +160,42 @@ const translations = {
     morning: 'الصباح',
     sleep: 'النوم',
     travel: 'السفر',
-    results: 'النتائج'
+    results: 'النتائج',
+    repeatVerse: 'تكرار الآية',
+    repeatSurah: 'تكرار السورة',
+    noRepeat: 'بدون تكرار',
+    speed: 'السرعة',
+    notes: 'ملاحظات',
+    addNote: 'إضافة ملاحظة',
+    saveNote: 'حفظ',
+    deleteNote: 'حذف',
+    reminderType: 'نوع التذكير',
+    readingReminder: 'قراءة القرآن',
+    prayerReminder: 'الصلوات',
+    duaReminder: 'الأدعية',
+    markUnread: 'تحديد كغير مقروء',
+    markJuzRead: 'تحديد الجزء كمقروء',
+    markJuzUnread: 'تحديد الجزء كغير مقروء',
+    qibla: 'اتجاه القبلة',
+    qiblaDesc: 'الاتجاه نحو الكعبة المشرفة في مكة المكرمة.',
+    frequency: 'التكرار',
+    time: 'الوقت',
+    daily: 'يومي',
+    weekly: 'أسبوعي',
+    reminders: 'التذكيرات'
   }
 };
 
 // --- Components ---
 
-const Navbar = ({ activeTab, setActiveTab, language }: { activeTab: string, setActiveTab: (t: string) => void, language: Language }) => {
+const Navbar = ({ activeTab, setActiveTab, language, setLanguage }: { 
+  activeTab: string, 
+  setActiveTab: (t: string) => void, 
+  language: Language,
+  setLanguage: (l: Language) => void
+}) => {
   const t = translations[language];
+  const isAr = language === 'ar';
   const tabs = [
     { id: 'reader', icon: BookOpen, label: t.reader },
     { id: 'plan', icon: Calendar, label: t.plan },
@@ -144,19 +205,50 @@ const Navbar = ({ activeTab, setActiveTab, language }: { activeTab: string, setA
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-lg border-t border-primary/10 px-4 py-2 flex justify-around items-center z-50">
-      {tabs.map((tab) => (
-        <button
-          key={tab.id}
-          onClick={() => setActiveTab(tab.id)}
-          className={`flex flex-col items-center gap-1 transition-all duration-300 ${
-            activeTab === tab.id ? 'text-secondary scale-110' : 'text-primary/40'
-          }`}
-        >
-          <tab.icon size={20} strokeWidth={activeTab === tab.id ? 2.5 : 2} />
-          <span className="text-[10px] font-medium uppercase tracking-wider">{tab.label}</span>
-        </button>
-      ))}
+    <nav className={`fixed top-0 bottom-0 ${isAr ? 'right-0 border-l' : 'left-0 border-r'} w-20 bg-white/90 backdrop-blur-lg border-primary/10 py-10 flex flex-col items-center gap-8 z-50`}>
+      <div className="flex flex-col items-center gap-6 w-full">
+        <div className="mb-2">
+          <div className="w-12 h-12 bg-primary rounded-2xl flex items-center justify-center text-white font-serif font-bold text-xl shadow-lg shadow-primary/20">
+            {isAr ? 'ق' : 'Q'}
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-2 bg-primary/5 rounded-2xl p-1.5 mb-4">
+          <button 
+            onClick={() => setLanguage('fr')}
+            className={`w-10 h-10 rounded-xl text-[10px] font-bold transition-all flex items-center justify-center ${language === 'fr' ? 'bg-white shadow-md text-primary' : 'text-primary/40 hover:text-primary/60'}`}
+          >
+            FR
+          </button>
+          <button 
+            onClick={() => setLanguage('ar')}
+            className={`w-10 h-10 rounded-xl text-[10px] font-bold transition-all flex items-center justify-center ${language === 'ar' ? 'bg-white shadow-md text-primary' : 'text-primary/40 hover:text-primary/60'}`}
+          >
+            AR
+          </button>
+        </div>
+
+        <div className="flex flex-col gap-6 items-center w-full">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex flex-col items-center gap-1.5 transition-all duration-300 w-full px-1 relative ${
+                activeTab === tab.id ? 'text-secondary scale-110' : 'text-primary/40 hover:text-primary/60'
+              }`}
+            >
+              <tab.icon size={22} strokeWidth={activeTab === tab.id ? 2.5 : 2} />
+              <span className="text-[9px] font-bold uppercase tracking-tighter text-center leading-tight">{tab.label}</span>
+              {activeTab === tab.id && (
+                <motion.div 
+                  layoutId="activeTab"
+                  className={`absolute ${isAr ? 'right-0' : 'left-0'} w-1 h-8 bg-secondary rounded-full`}
+                />
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
     </nav>
   );
 };
@@ -179,10 +271,75 @@ const QuranReader = ({ language, completedAyahs, toggleAyahRead }: {
   const [isSearching, setIsSearching] = useState(false);
   const [audioProgress, setAudioProgress] = useState(0);
   const [audioDuration, setAudioDuration] = useState(0);
+  const [playbackRate, setPlaybackRate] = useState(1);
+  const [repeatMode, setRepeatMode] = useState<'none' | 'verse' | 'surah'>('none');
+  const [verseNotes, setVerseNotes] = useState<{ [key: number]: string }>(() => {
+    const saved = localStorage.getItem('quran_notes');
+    return saved ? JSON.parse(saved) : {};
+  });
+  const [editingNoteVerse, setEditingNoteVerse] = useState<number | null>(null);
+  const [noteText, setNoteText] = useState('');
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const verseRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
 
   const [autoPlayVerse, setAutoPlayVerse] = useState<number | null>(null);
+
+  useEffect(() => {
+    localStorage.setItem('quran_notes', JSON.stringify(verseNotes));
+  }, [verseNotes]);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.playbackRate = playbackRate;
+    }
+  }, [playbackRate]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const handleTimeUpdate = () => {
+      setAudioProgress((audio.currentTime / audio.duration) * 100);
+    };
+
+    const handleLoadedMetadata = () => {
+      setAudioDuration(audio.duration);
+    };
+
+    const handleEnded = () => {
+      if (repeatMode === 'verse') {
+        audio.currentTime = 0;
+        audio.play();
+      } else if (playingVerse !== null) {
+        const currentVerse = verses.find(v => v.number === playingVerse);
+        if (currentVerse) {
+          const nextVerse = verses.find(v => v.verseNumberInSurah === currentVerse.verseNumberInSurah! + 1);
+          if (nextVerse) {
+            playAudio(nextVerse.number);
+            verseRefs.current[nextVerse.verseNumberInSurah!]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          } else if (repeatMode === 'surah') {
+            const firstVerse = verses.find(v => v.verseNumberInSurah === 1);
+            if (firstVerse) {
+              playAudio(firstVerse.number);
+              verseRefs.current[1]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          } else {
+            setPlayingVerse(null);
+          }
+        }
+      }
+    };
+
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+    audio.addEventListener('ended', handleEnded);
+
+    return () => {
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, [playingVerse, verses, repeatMode]);
 
   useEffect(() => {
     QuranService.getSurahs().then(setSurahs);
@@ -260,20 +417,19 @@ const QuranReader = ({ language, completedAyahs, toggleAyahRead }: {
     }
   };
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     const sNum = parseInt(searchSurah);
     const aNum = parseInt(searchAyah);
-    if (!isNaN(sNum) && sNum >= 1 && sNum <= 114) {
-      if (sNum === selectedSurah) {
-        const target = verseRefs.current[aNum];
-        if (target) {
-          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          const verseToPlay = verses.find(v => v.verseNumberInSurah === aNum);
-          if (verseToPlay) playAudio(verseToPlay.number);
-        }
-      } else {
-        setSelectedSurah(sNum);
-        setAutoPlayVerse(aNum);
+    if (!isNaN(sNum) && sNum >= 1 && sNum <= 114 && !isNaN(aNum)) {
+      try {
+        const verse = await QuranService.getVerseWithTranslation(sNum, aNum, language === 'ar' ? 'ar.alafasy' : 'fr.hamidullah');
+        setSearchResults([{
+          ...verse,
+          surahNumber: sNum,
+          verseNumberInSurah: aNum
+        }]);
+      } catch (error) {
+        console.error("Numeric search error:", error);
       }
     }
   };
@@ -299,8 +455,88 @@ const QuranReader = ({ language, completedAyahs, toggleAyahRead }: {
     }
   };
 
+  const saveNote = (verseNumber: number) => {
+    setVerseNotes(prev => ({ ...prev, [verseNumber]: noteText }));
+    setEditingNoteVerse(null);
+    setNoteText('');
+  };
+
+  const deleteNote = (verseNumber: number) => {
+    setVerseNotes(prev => {
+      const next = { ...prev };
+      delete next[verseNumber];
+      return next;
+    });
+  };
+
   return (
-    <div className="pb-24 pt-6 px-4 max-w-2xl mx-auto" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+    <div className="py-10 px-6 max-w-3xl mx-auto" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+      <audio ref={audioRef} className="hidden" />
+      
+      {/* Audio Controls Overlay */}
+      <AnimatePresence>
+        {playingVerse && (
+          <motion.div 
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: 100, opacity: 0 }}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md bg-white/90 backdrop-blur-xl border border-primary/10 rounded-3xl p-4 shadow-2xl z-[60] flex flex-col gap-3"
+          >
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-primary/5 rounded-full flex items-center justify-center text-primary font-bold">
+                  {verses.find(v => v.number === playingVerse)?.verseNumberInSurah}
+                </div>
+                <div className="text-xs font-bold text-primary/60 truncate max-w-[150px]">
+                  {verses.find(v => v.number === playingVerse)?.surahName}
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => setRepeatMode(prev => prev === 'none' ? 'verse' : prev === 'verse' ? 'surah' : 'none')}
+                  className={`p-2 rounded-full transition-all ${repeatMode !== 'none' ? 'bg-secondary/10 text-secondary' : 'text-primary/40'}`}
+                  title={repeatMode === 'verse' ? t.repeatVerse : repeatMode === 'surah' ? t.repeatSurah : t.noRepeat}
+                >
+                  {repeatMode === 'verse' ? <Repeat1 size={18} /> : <Repeat size={18} />}
+                </button>
+                
+                <select 
+                  value={playbackRate}
+                  onChange={(e) => setPlaybackRate(Number(e.target.value))}
+                  className="bg-primary/5 border-none rounded-full px-2 py-1 text-[10px] font-bold outline-none"
+                >
+                  <option value={0.5}>0.5x</option>
+                  <option value={0.75}>0.75x</option>
+                  <option value={1}>1x</option>
+                  <option value={1.25}>1.25x</option>
+                  <option value={1.5}>1.5x</option>
+                  <option value={2}>2x</option>
+                </select>
+
+                <button onClick={() => setPlayingVerse(null)} className="p-2 text-primary/40 hover:text-red-500">
+                  <X size={18} />
+                </button>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <div className="h-1.5 w-full bg-primary/5 rounded-full overflow-hidden">
+                <motion.div 
+                  className="h-full bg-secondary"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${audioProgress}%` }}
+                />
+              </div>
+              <div className="flex justify-between text-[8px] font-bold text-primary/30 uppercase tracking-widest">
+                <span>{Math.floor(audioRef.current?.currentTime || 0)}s</span>
+                <span>{Math.floor(audioDuration || 0)}s</span>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="flex flex-col gap-4 mb-8">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-serif font-bold text-primary">
@@ -397,84 +633,94 @@ const QuranReader = ({ language, completedAyahs, toggleAyahRead }: {
               animate={{ opacity: 1, y: 0 }}
               key={v.number} 
               ref={el => verseRefs.current[v.verseNumberInSurah!] = el}
-              className={`glass-card rounded-2xl p-6 relative overflow-hidden group transition-all duration-500 ${playingVerse === v.number ? 'ring-2 ring-secondary bg-secondary/5' : ''} ${completedAyahs.has(v.number) ? 'opacity-60 border-emerald-500/20' : ''}`}
+              className={`glass-card rounded-2xl p-6 relative overflow-hidden group transition-all duration-500 ${playingVerse === v.number ? 'ring-2 ring-secondary bg-secondary/5' : ''} ${completedAyahs.has(v.number) ? 'opacity-50 border-emerald-500/30 bg-emerald-50/5' : ''}`}
             >
-              <div className="flex justify-between items-start mb-4">
+              {playingVerse === v.number && (
+                <motion.div 
+                  layoutId="playing-glow"
+                  className="absolute inset-0 bg-secondary/5 pointer-events-none"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                />
+              )}
+              <div className="flex justify-between items-start mb-4 relative z-10">
                 <div className="flex items-center gap-2">
-                  <span className="bg-secondary/10 text-secondary text-xs font-bold px-3 py-1 rounded-full">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${completedAyahs.has(v.number) ? 'bg-emerald-500 text-white' : 'bg-primary/5 text-primary/40'}`}>
                     {v.verseNumberInSurah}
-                  </span>
+                  </div>
                   <button 
                     onClick={() => toggleAyahRead(v.number)}
-                    title={t.markRead}
-                    className={`p-1.5 rounded-full transition-colors ${completedAyahs.has(v.number) ? 'bg-emerald-500 text-white' : 'bg-primary/5 text-primary/20 hover:text-emerald-500'}`}
+                    className={`transition-all ${completedAyahs.has(v.number) ? 'text-emerald-500' : 'text-primary/20 hover:text-emerald-500'}`}
                   >
-                    <Book size={16} />
+                    {completedAyahs.has(v.number) ? <CheckCircle2 size={18} /> : <Circle size={18} />}
                   </button>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex gap-2">
                   <button 
-                    onClick={() => navigateVerse('prev', v.verseNumberInSurah!)}
-                    className="p-1.5 text-primary/20 hover:text-primary transition-colors"
+                    onClick={() => {
+                      setEditingNoteVerse(v.number);
+                      setNoteText(verseNotes[v.number] || '');
+                    }}
+                    className={`p-2 rounded-xl transition-all ${verseNotes[v.number] ? 'bg-secondary/10 text-secondary' : 'text-primary/20 hover:text-secondary'}`}
                   >
-                    {language === 'ar' ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
+                    <StickyNote size={18} />
                   </button>
                   <button 
                     onClick={() => playAudio(v.number)}
-                    className={`p-1.5 transition-colors ${playingVerse === v.number ? 'text-secondary' : 'text-primary/40 hover:text-secondary'}`}
+                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${playingVerse === v.number ? 'bg-secondary text-white shadow-lg shadow-secondary/20' : 'bg-primary/5 text-primary/40 hover:bg-primary/10'}`}
                   >
-                    {playingVerse === v.number ? <Pause size={20} /> : <Play size={20} />}
-                  </button>
-                  <button 
-                    onClick={() => navigateVerse('next', v.verseNumberInSurah!)}
-                    className="p-1.5 text-primary/20 hover:text-primary transition-colors"
-                  >
-                    {language === 'ar' ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
+                    {playingVerse === v.number ? <Pause size={18} fill="currentColor" /> : <Play size={18} fill="currentColor" className={language === 'ar' ? 'mr-0.5' : 'ml-0.5'} />}
                   </button>
                 </div>
               </div>
 
-              {playingVerse === v.number && (
-                <div className="mb-4 space-y-2">
-                  <div className="flex items-center gap-3">
-                    <button onClick={() => skipAudio(-15)} className="text-primary/40 hover:text-primary"><RotateCcw size={16} /></button>
-                    <div className="flex-1 h-1 bg-primary/5 rounded-full overflow-hidden relative">
-                      <div 
-                        className="absolute top-0 left-0 h-full bg-secondary transition-all duration-300"
-                        style={{ width: `${(audioProgress / audioDuration) * 100}%` }}
-                      />
+              <div className="space-y-4 relative z-10">
+                <p className="arabic-text text-3xl leading-relaxed text-right text-primary">
+                  {v.text}
+                </p>
+                <p className="text-sm text-primary/60 leading-relaxed italic">
+                  {language === 'ar' ? v.text : v.translation}
+                </p>
+
+                {verseNotes[v.number] && editingNoteVerse !== v.number && (
+                  <div className="bg-secondary/5 border-l-2 border-secondary p-3 rounded-r-xl text-xs text-primary/70 italic flex justify-between items-start">
+                    <span>{verseNotes[v.number]}</span>
+                    <button onClick={() => deleteNote(v.number)} className="text-red-400 hover:text-red-600">
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                )}
+
+                {editingNoteVerse === v.number && (
+                  <div className="space-y-2">
+                    <textarea 
+                      value={noteText}
+                      onChange={(e) => setNoteText(e.target.value)}
+                      placeholder={t.addNote}
+                      className="w-full bg-white border border-primary/10 rounded-xl p-3 text-xs outline-none focus:ring-2 focus:ring-secondary/50 min-h-[80px]"
+                    />
+                    <div className="flex justify-end gap-2">
+                      <button onClick={() => setEditingNoteVerse(null)} className="px-3 py-1 text-[10px] font-bold text-primary/40 uppercase">Cancel</button>
+                      <button onClick={() => saveNote(v.number)} className="bg-secondary text-white px-3 py-1 rounded-lg text-[10px] font-bold uppercase flex items-center gap-1">
+                        <Save size={12} /> {t.saveNote}
+                      </button>
                     </div>
-                    <button onClick={() => skipAudio(15)} className="text-primary/40 hover:text-primary"><RotateCw size={16} /></button>
                   </div>
-                  <div className="flex justify-between text-[8px] text-primary/40 font-mono">
-                    <span>{Math.floor(audioProgress / 60)}:{Math.floor(audioProgress % 60).toString().padStart(2, '0')}</span>
-                    <span>{Math.floor(audioDuration / 60)}:{Math.floor(audioDuration % 60).toString().padStart(2, '0')}</span>
-                  </div>
-                </div>
-              )}
-              
-              <p className="arabic-text text-3xl leading-relaxed mb-6 text-right text-primary">
-                {v.text}
-              </p>
-              
-              <p className={`text-primary/70 text-sm leading-relaxed font-light italic border-t border-primary/5 pt-4 ${language === 'ar' ? 'text-right' : 'text-left'}`}>
-                {language === 'ar' ? v.text : v.translation}
-              </p>
+                )}
+              </div>
             </motion.div>
           ))}
         </div>
       )}
-      <audio 
-        ref={audioRef} 
-        onEnded={() => setPlayingVerse(null)} 
-        onTimeUpdate={() => setAudioProgress(audioRef.current?.currentTime || 0)}
-        onLoadedMetadata={() => setAudioDuration(audioRef.current?.duration || 0)}
-      />
     </div>
   );
 };
 
-const ReadingPlanView = ({ language, completedAyahs }: { language: Language, completedAyahs: Set<number> }) => {
+const ReadingPlanView = ({ language, completedAyahs, toggleAyahRead }: { 
+  language: Language, 
+  completedAyahs: Set<number>,
+  toggleAyahRead: (num: number) => void
+}) => {
   const t = translations[language];
   const totalAyahs = 6236;
   const progress = Math.round((completedAyahs.size / totalAyahs) * 100);
@@ -490,7 +736,7 @@ const ReadingPlanView = ({ language, completedAyahs }: { language: Language, com
   };
 
   return (
-    <div className="pb-24 pt-6 px-4 max-w-2xl mx-auto" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+    <div className="py-10 px-6 max-w-3xl mx-auto" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       <h1 className="text-3xl font-serif font-bold text-primary mb-8">
         {t.plan}
       </h1>
@@ -514,8 +760,8 @@ const ReadingPlanView = ({ language, completedAyahs }: { language: Language, com
               <div className="text-xl font-bold">18</div>
             </div>
             <div className="bg-primary/5 rounded-2xl p-4">
-              <div className="text-xs text-primary/40 mb-1">{t.targetPerDay}</div>
-              <div className="text-xl font-bold">1 Juz</div>
+              <div className="text-xs text-primary/40 mb-1">{t.completed}</div>
+              <div className="text-xl font-bold">{completedAyahs.size}</div>
             </div>
           </div>
         </div>
@@ -524,19 +770,39 @@ const ReadingPlanView = ({ language, completedAyahs }: { language: Language, com
       <div className="mb-10">
         <h2 className="text-sm uppercase tracking-widest text-primary/40 font-bold mb-4 px-2">{t.surahProgress}</h2>
         <div className="space-y-3">
-          {surahs.slice(0, 10).map(s => {
+          {surahs.slice(0, 15).map(s => {
             const p = getSurahProgress(s.number);
             return (
-              <div key={s.number} className="glass-card rounded-2xl p-4 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="text-xs font-bold text-secondary w-6">{s.number}</span>
-                  <span className="text-sm font-medium text-primary">{language === 'ar' ? s.name : s.englishName}</span>
-                </div>
-                <div className="flex items-center gap-4 flex-1 max-w-[120px] ml-4">
-                  <div className="flex-1 h-1.5 bg-primary/5 rounded-full overflow-hidden">
-                    <div className="h-full bg-emerald-500" style={{ width: `${p}%` }} />
+              <div key={s.number} className="glass-card rounded-2xl p-4 flex flex-col gap-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-bold text-secondary w-6">{s.number}</span>
+                    <span className="text-sm font-medium text-primary">{language === 'ar' ? s.name : s.englishName}</span>
                   </div>
-                  <span className="text-[10px] font-bold text-primary/40">{p}%</span>
+                  <div className="flex items-center gap-2">
+                    <button 
+                      onClick={() => {
+                        // In a real app, we'd fetch all ayah numbers for this surah
+                        // For this demo, we'll just toggle a range based on surah number
+                        // This is a simplified way to show manual progress management
+                        const start = (s.number - 1) * 20 + 1;
+                        const end = start + s.numberOfAyahs;
+                        for (let i = start; i < end; i++) {
+                          if (!completedAyahs.has(i)) toggleAyahRead(i);
+                        }
+                      }}
+                      className="text-[10px] font-bold text-secondary uppercase hover:underline"
+                    >
+                      {t.markJuzRead}
+                    </button>
+                    <div className="text-[10px] font-bold text-primary/40">{p}%</div>
+                  </div>
+                </div>
+                <div className="w-full bg-primary/5 h-1.5 rounded-full overflow-hidden">
+                  <div 
+                    className="bg-emerald-500 h-full transition-all duration-500"
+                    style={{ width: `${p}%` }}
+                  />
                 </div>
               </div>
             );
@@ -546,7 +812,7 @@ const ReadingPlanView = ({ language, completedAyahs }: { language: Language, com
 
       <div className="space-y-4">
         <h2 className="text-lg font-bold text-primary/60 px-2">{t.ramadanCalendar}</h2>
-        {[1, 2, 3, 4, 5].map((day) => (
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((day) => (
           <div key={day} className="glass-card rounded-2xl p-5 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${day < 4 ? 'bg-secondary text-white' : 'bg-primary/5 text-primary/40'}`}>
@@ -579,7 +845,8 @@ const ToolsView = ({ language }: { language: Language }) => {
   const [currentPrayer, setCurrentPrayer] = useState<string | null>(null);
 
   useEffect(() => {
-    QuranService.getPrayerTimes('Nouakchott', 'Mauritania').then(setPrayerTimes);
+    // Method 3 is Muslim World League, commonly used in Mauritania
+    QuranService.getPrayerTimes('Nouakchott', 'Mauritania', 3).then(setPrayerTimes);
   }, []);
 
   useEffect(() => {
@@ -636,7 +903,7 @@ const ToolsView = ({ language }: { language: Language }) => {
   const categories = ['all', 'morning', 'sleep', 'travel'];
 
   return (
-    <div className="pb-24 pt-6 px-4 max-w-2xl mx-auto" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+    <div className="py-10 px-6 max-w-3xl mx-auto" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       <h1 className="text-3xl font-serif font-bold text-primary mb-8">
         {t.tools}
       </h1>
@@ -658,6 +925,27 @@ const ToolsView = ({ language }: { language: Language }) => {
               {currentPrayer === name && <div className="text-[8px] text-secondary font-bold mt-1 uppercase tracking-tighter">{t.current}</div>}
             </div>
           ))}
+        </div>
+      </div>
+
+      <div className="mb-10">
+        <h2 className="text-sm uppercase tracking-widest text-primary/40 font-bold mb-4 px-2">{t.qibla}</h2>
+        <div className="glass-card rounded-3xl p-8 flex flex-col items-center justify-center relative overflow-hidden bg-gradient-to-b from-white to-primary/5">
+          <div className="relative w-48 h-48 rounded-full border-4 border-primary/5 flex items-center justify-center mb-6">
+            <motion.div 
+              animate={{ rotate: 180 }} // Simulated Qibla angle for Mauritania
+              className="absolute inset-0 flex items-center justify-center"
+            >
+              <div className="w-1 h-full bg-primary/5 absolute rounded-full"></div>
+              <div className="w-4 h-4 bg-secondary rounded-full shadow-lg shadow-secondary/50 relative z-10"></div>
+              <ArrowUp className="text-secondary absolute top-2" size={24} strokeWidth={3} />
+            </motion.div>
+            <Compass size={80} className="text-primary/10" />
+          </div>
+          <div className="text-center">
+            <div className="text-lg font-bold text-primary mb-1">180° S</div>
+            <p className="text-xs text-primary/40 max-w-[200px]">{t.qiblaDesc}</p>
+          </div>
         </div>
       </div>
 
@@ -728,40 +1016,36 @@ const QuizView = ({ language }: { language: Language }) => {
   const [step, setStep] = useState<'start' | 'question' | 'result'>('start');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
-  const [selectedOption, setSelectedOption] = useState<number | null>(null);
-  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+  const [userAnswers, setUserAnswers] = useState<(number | null)[]>(new Array(QUIZ_QUESTIONS.length).fill(null));
+  const [showResults, setShowResults] = useState(false);
 
   const startQuiz = () => {
     setStep('question');
     setCurrentQuestionIndex(0);
     setScore(0);
-    setSelectedOption(null);
-    setIsCorrect(null);
+    setUserAnswers(new Array(QUIZ_QUESTIONS.length).fill(null));
+    setShowResults(false);
   };
 
   const handleAnswer = (optionIndex: number) => {
-    if (selectedOption !== null) return;
-    
-    setSelectedOption(optionIndex);
-    const correct = optionIndex === QUIZ_QUESTIONS[currentQuestionIndex].correctAnswer;
-    setIsCorrect(correct);
-    if (correct) setScore(s => s + 1);
+    const newAnswers = [...userAnswers];
+    newAnswers[currentQuestionIndex] = optionIndex;
+    setUserAnswers(newAnswers);
+  };
 
-    setTimeout(() => {
-      if (currentQuestionIndex < QUIZ_QUESTIONS.length - 1) {
-        setCurrentQuestionIndex(i => i + 1);
-        setSelectedOption(null);
-        setIsCorrect(null);
-      } else {
-        setStep('result');
-      }
-    }, 1500);
+  const finishQuiz = () => {
+    let finalScore = 0;
+    userAnswers.forEach((ans, idx) => {
+      if (ans === QUIZ_QUESTIONS[idx].correctAnswer) finalScore++;
+    });
+    setScore(finalScore);
+    setStep('result');
   };
 
   const currentQuestion = QUIZ_QUESTIONS[currentQuestionIndex];
 
   return (
-    <div className="pb-24 pt-6 px-4 max-w-2xl mx-auto h-[80vh] flex flex-col items-center justify-center text-center" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+    <div className="py-10 px-6 max-w-3xl mx-auto h-[80vh] flex flex-col items-center justify-center text-center" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       <AnimatePresence mode="wait">
         {step === 'start' && (
           <motion.div 
@@ -790,31 +1074,62 @@ const QuizView = ({ language }: { language: Language }) => {
 
         {step === 'question' && (
           <motion.div 
-            key="question"
+            key={currentQuestionIndex}
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -50 }}
-            className="w-full"
+            className="w-full max-w-md"
           >
             <div className="text-xs font-bold text-secondary uppercase tracking-widest mb-4">
               {t.question.replace('{n}', (currentQuestionIndex + 1).toString()).replace('{total}', QUIZ_QUESTIONS.length.toString())}
             </div>
             <h2 className="text-2xl font-serif font-bold text-primary mb-8">{currentQuestion.question}</h2>
-            <div className="grid gap-4">
+            <div className="grid gap-3 mb-8">
               {currentQuestion.options.map((opt, idx) => (
                 <button 
                   key={opt}
                   onClick={() => handleAnswer(idx)}
-                  disabled={selectedOption !== null}
-                  className={`glass-card rounded-2xl p-5 text-left font-medium transition-all border-2 shadow-sm ${
-                    selectedOption === idx 
-                      ? (isCorrect ? 'border-emerald-500 bg-emerald-50' : 'border-red-500 bg-red-50')
-                      : (selectedOption !== null && idx === currentQuestion.correctAnswer ? 'border-emerald-500 bg-emerald-50' : 'border-transparent')
+                  className={`glass-card rounded-2xl p-4 text-left font-medium transition-all border-2 ${
+                    userAnswers[currentQuestionIndex] === idx 
+                      ? 'border-secondary bg-secondary/5 shadow-md' 
+                      : 'border-transparent hover:border-primary/10'
                   }`}
                 >
-                  {opt}
+                  <div className="flex items-center gap-3">
+                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center text-[10px] ${userAnswers[currentQuestionIndex] === idx ? 'border-secondary bg-secondary text-white' : 'border-primary/10'}`}>
+                      {String.fromCharCode(65 + idx)}
+                    </div>
+                    {opt}
+                  </div>
                 </button>
               ))}
+            </div>
+
+            <div className="flex items-center justify-between gap-4">
+              <button 
+                onClick={() => setCurrentQuestionIndex(i => Math.max(0, i - 1))}
+                disabled={currentQuestionIndex === 0}
+                className="flex items-center gap-2 text-primary/40 hover:text-primary disabled:opacity-20 font-bold uppercase text-[10px] tracking-widest"
+              >
+                <ChevronLeft size={18} /> {language === 'ar' ? 'السابق' : 'Précédent'}
+              </button>
+
+              {currentQuestionIndex === QUIZ_QUESTIONS.length - 1 ? (
+                <button 
+                  onClick={finishQuiz}
+                  disabled={userAnswers.some(a => a === null)}
+                  className="bg-secondary text-white px-6 py-2 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-secondary/90 disabled:opacity-50 shadow-lg shadow-secondary/20"
+                >
+                  {language === 'ar' ? 'إنهاء' : 'Terminer'}
+                </button>
+              ) : (
+                <button 
+                  onClick={() => setCurrentQuestionIndex(i => Math.min(QUIZ_QUESTIONS.length - 1, i + 1))}
+                  className="flex items-center gap-2 text-primary/40 hover:text-primary font-bold uppercase text-[10px] tracking-widest"
+                >
+                  {language === 'ar' ? 'التالي' : 'Suivant'} <ChevronRight size={18} />
+                </button>
+              )}
             </div>
           </motion.div>
         )}
@@ -824,11 +1139,35 @@ const QuizView = ({ language }: { language: Language }) => {
             key="result"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            className="w-full max-w-md"
           >
+            <div className="w-20 h-20 bg-secondary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Award size={40} className="text-secondary" />
+            </div>
             <h2 className="text-4xl font-serif font-bold text-primary mb-2">
               {score === QUIZ_QUESTIONS.length ? t.perfect : t.bravo}
             </h2>
             <div className="text-xl text-secondary font-bold mb-8">{t.score}: {score}/{QUIZ_QUESTIONS.length}</div>
+            
+            <div className="space-y-4 mb-8 text-left max-h-64 overflow-y-auto pr-2 custom-scrollbar">
+              {QUIZ_QUESTIONS.map((q, idx) => (
+                <div key={q.id} className="p-4 rounded-2xl bg-primary/5 border border-primary/5">
+                  <div className="text-[10px] font-bold text-primary/40 mb-1 uppercase">Question {idx + 1}</div>
+                  <div className="text-sm font-medium mb-2">{q.question}</div>
+                  <div className="flex flex-col gap-1">
+                    <div className={`text-xs p-2 rounded-lg ${userAnswers[idx] === q.correctAnswer ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
+                      {language === 'ar' ? 'إجابتك: ' : 'Votre réponse: '} {q.options[userAnswers[idx] as number]}
+                    </div>
+                    {userAnswers[idx] !== q.correctAnswer && (
+                      <div className="text-xs p-2 rounded-lg bg-emerald-50 text-emerald-600">
+                        {language === 'ar' ? 'الإجابة الصحيحة: ' : 'Réponse correcte: '} {q.options[q.correctAnswer]}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+
             <button 
               onClick={() => setStep('start')}
               className="bg-primary text-white px-8 py-3 rounded-full font-bold hover:bg-primary/90 transition-all"
@@ -849,8 +1188,37 @@ const SettingsView = ({ language, setLanguage, theme, setTheme }: {
   setTheme: (t: 'light' | 'dark') => void
 }) => {
   const t = translations[language];
+  const [reminders, setReminders] = useState<{
+    [key: string]: { enabled: boolean; frequency: 'daily' | 'weekly'; time: string }
+  }>(() => {
+    const saved = localStorage.getItem('quran_reminders');
+    return saved ? JSON.parse(saved) : {
+      reading: { enabled: true, frequency: 'daily', time: '08:00' },
+      prayer: { enabled: true, frequency: 'daily', time: '05:00' },
+      dua: { enabled: false, frequency: 'daily', time: '20:00' }
+    };
+  });
+
+  useEffect(() => {
+    localStorage.setItem('quran_reminders', JSON.stringify(reminders));
+  }, [reminders]);
+
+  const toggleReminder = (type: string) => {
+    setReminders(prev => ({
+      ...prev,
+      [type]: { ...prev[type], enabled: !prev[type].enabled }
+    }));
+  };
+
+  const updateReminder = (type: string, field: string, value: any) => {
+    setReminders(prev => ({
+      ...prev,
+      [type]: { ...prev[type], [field]: value }
+    }));
+  };
+
   return (
-    <div className="pb-24 pt-6 px-4 max-w-2xl mx-auto" dir={language === 'ar' ? 'rtl' : 'ltr'}>
+    <div className="py-10 px-6 max-w-3xl mx-auto" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       <h1 className="text-3xl font-serif font-bold text-primary mb-8">
         {t.settings}
       </h1>
@@ -859,27 +1227,6 @@ const SettingsView = ({ language, setLanguage, theme, setTheme }: {
         <div className="glass-card rounded-2xl p-6">
           <h2 className="text-sm font-bold text-primary/40 uppercase tracking-widest mb-4">{t.general}</h2>
           
-          <div className="flex items-center justify-between py-3 border-b border-primary/5">
-            <div className="flex items-center gap-3">
-              <Languages size={20} className="text-primary/60" />
-              <span className="font-medium">{t.language}</span>
-            </div>
-            <div className="flex bg-primary/5 rounded-full p-1">
-              <button 
-                onClick={() => setLanguage('fr')}
-                className={`px-4 py-1 rounded-full text-xs font-bold transition-all ${language === 'fr' ? 'bg-white shadow-sm text-primary' : 'text-primary/40'}`}
-              >
-                FR
-              </button>
-              <button 
-                onClick={() => setLanguage('ar')}
-                className={`px-4 py-1 rounded-full text-xs font-bold transition-all ${language === 'ar' ? 'bg-white shadow-sm text-primary' : 'text-primary/40'}`}
-              >
-                AR
-              </button>
-            </div>
-          </div>
-
           <div className="flex items-center justify-between py-3 border-b border-primary/5">
             <div className="flex items-center gap-3">
               {theme === 'light' ? <Sun size={20} className="text-primary/60" /> : <Moon size={20} className="text-primary/60" />}
@@ -893,12 +1240,63 @@ const SettingsView = ({ language, setLanguage, theme, setTheme }: {
             </button>
           </div>
 
-          <div className="flex items-center justify-between py-3">
+          <div className="flex flex-col gap-6 py-4">
             <div className="flex items-center gap-3">
               <Bell size={20} className="text-primary/60" />
-              <span className="font-medium">{t.notifications}</span>
+              <span className="font-medium">{t.reminders}</span>
             </div>
-            <button className="text-secondary font-bold text-sm">{t.enable}</button>
+            
+            <div className="space-y-4">
+              {['reading', 'prayer', 'dua'].map((type) => (
+                <div key={type} className="bg-primary/5 rounded-2xl p-4 space-y-4 border border-primary/5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${reminders[type].enabled ? 'bg-secondary text-white' : 'bg-primary/10 text-primary/40'}`}>
+                        {type === 'reading' ? <Book size={20} /> : type === 'prayer' ? <Clock size={20} /> : <MessageSquare size={20} />}
+                      </div>
+                      <span className="font-bold text-sm text-primary">
+                        {t[`${type}Reminder` as keyof typeof t] || type}
+                      </span>
+                    </div>
+                    <button 
+                      onClick={() => toggleReminder(type)}
+                      className={`w-12 h-6 rounded-full relative transition-all ${reminders[type].enabled ? 'bg-secondary/20' : 'bg-primary/10'}`}
+                    >
+                      <div className={`absolute top-1 w-4 h-4 rounded-full transition-all ${reminders[type].enabled ? 'left-7 bg-secondary' : 'left-1 bg-primary/30'}`}></div>
+                    </button>
+                  </div>
+
+                  {reminders[type].enabled && (
+                    <motion.div 
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      className="grid grid-cols-2 gap-4 pt-2 border-t border-primary/5"
+                    >
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-primary/40 uppercase px-1">{t.frequency}</label>
+                        <select 
+                          value={reminders[type].frequency}
+                          onChange={(e) => updateReminder(type, 'frequency', e.target.value)}
+                          className="w-full bg-white border border-primary/10 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-secondary/50 outline-none"
+                        >
+                          <option value="daily">{t.daily}</option>
+                          <option value="weekly">{t.weekly}</option>
+                        </select>
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-primary/40 uppercase px-1">{t.time}</label>
+                        <input 
+                          type="time"
+                          value={reminders[type].time}
+                          onChange={(e) => updateReminder(type, 'time', e.target.value)}
+                          className="w-full bg-white border border-primary/10 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-secondary/50 outline-none"
+                        />
+                      </div>
+                    </motion.div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -932,8 +1330,10 @@ export default function App() {
   };
 
   return (
-    <div className={`min-h-screen transition-colors duration-500 ${theme === 'dark' ? 'dark bg-slate-900' : 'bg-accent'}`}>
-      <main className="max-w-4xl mx-auto">
+    <div className={`min-h-screen transition-colors duration-500 ${theme === 'dark' ? 'dark bg-slate-900' : 'bg-accent'} ${language === 'ar' ? 'pr-20' : 'pl-20'}`}>
+      <Navbar activeTab={activeTab} setActiveTab={setActiveTab} language={language} setLanguage={setLanguage} />
+      
+      <main className="w-full">
         <AnimatePresence mode="wait">
           {activeTab === 'reader' && (
             <motion.div key="reader" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
@@ -946,7 +1346,7 @@ export default function App() {
           )}
           {activeTab === 'plan' && (
             <motion.div key="plan" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <ReadingPlanView language={language} completedAyahs={completedAyahs} />
+              <ReadingPlanView language={language} completedAyahs={completedAyahs} toggleAyahRead={toggleAyahRead} />
             </motion.div>
           )}
           {activeTab === 'tools' && (
@@ -971,8 +1371,6 @@ export default function App() {
           )}
         </AnimatePresence>
       </main>
-
-      <Navbar activeTab={activeTab} setActiveTab={setActiveTab} language={language} />
     </div>
   );
 }

@@ -39,8 +39,8 @@ export const QuranService = {
     };
   },
 
-  async getPrayerTimes(city: string, country: string): Promise<PrayerTimes> {
-    const response = await fetch(`https://api.aladhan.com/v1/timingsByAddress?address=${city},${country}`);
+  async getPrayerTimes(city: string, country: string, method: number = 3): Promise<PrayerTimes> {
+    const response = await fetch(`https://api.aladhan.com/v1/timingsByCity?city=${city}&country=${country}&method=${method}`);
     const data = await response.json();
     return data.data.timings;
   },
